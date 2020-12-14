@@ -4,9 +4,12 @@ addEventListener('fetch', event => {
 
 async function handleRequest(event) {
   var cache = [];
+
   function clean(key, value) {
     if (typeof value === 'object' && value !== null) {
-      if (cache.indexOf(value) !== -1) { return;}
+      if (cache.indexOf(value) !== -1) {
+        return;
+      }
       cache.push(value);
     }
     return value;

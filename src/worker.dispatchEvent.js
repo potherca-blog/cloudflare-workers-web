@@ -31,7 +31,7 @@ const loadError = (event) => {
 }
 
 const loadSuccess = (event) => {
-  state ='success'
+  state = 'success'
   document.querySelector('.dashboard').classList.remove('hidden')
 }
 

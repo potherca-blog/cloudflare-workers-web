@@ -121,8 +121,8 @@ async function handleRequest(request) {
     }
 
     /*/ Links /*/
-    if (!response.links) {
-      response.links = { 'self': request.url }
+    if ( ! response.links) {
+      response.links = {'self': request.url}
     }
 
     /*/ Meta data /*/
@@ -142,9 +142,9 @@ async function handleRequest(request) {
   }
 
   if (request.method === 'OPTIONS') {
-    return Response(null, { headers: new Headers({ 'Allow': config.allowedMethods, }) })
+    return Response(null, {headers: new Headers({'Allow': config.allowedMethods,})})
   } else if (request.method === 'HEAD') {
-    return new Response(null, { headers: new Headers(corsHeaders), })
+    return new Response(null, {headers: new Headers(corsHeaders),})
   } else {
     const path = url.pathname.split('/').filter(Boolean).join('/');
 
