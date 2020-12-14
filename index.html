@@ -1,0 +1,139 @@
+<!doctype html>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+<link rel="icon" href="https://favicon.potherca.workers.dev/15">
+
+<h1>
+  <title>Example of running Cloudflare Worker code in the browser</title>
+</h1>
+
+<section class="dashboard hidden">
+  <h2>Response</h2>
+
+  <div data-js="errors" style="display:none; color:red; border:1px solid;padding: 1em;"></div>
+
+  <h3>Headers</h3>
+
+  <pre data-js="response-headers"></pre>
+
+  <h3>Body</h3>
+
+  <pre data-js="response-body"></pre>
+</section>
+
+<section class="help hidden">
+
+  <div data-js="errors" class="errors"></div>
+
+  <h2>How this works</h2>
+
+  <p>
+    When given <code>source</code> URL(s), this page will load the source file(s)
+    as Javascript and trigger an event similar to that in a CloudFlare Worker:
+  </p>
+
+  <pre><code>
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request))
+})
+  </code></pre>
+
+  <p>
+    Assuming (at least one of) the source file(s) contains a global <code>handleRequest</code>
+    function, it will be called.
+  </p>
+
+  <h2>Try it out</h2>
+  <p>
+    provide one or more source files below and submit the form.
+  </p>
+
+  <form>
+    <fieldset class="row-container"></fieldset>
+    <label>Pretty JSON: <input type="checkbox" name="pretty"/></label>
+    <button>Submit</button>
+  </form>
+</section>
+
+<footer class="created-by">
+  <p>
+    Source of this page is available on <a href="https://github.com/potherca-blog/cloudflare-workers-web/">Github</a>
+    under a <a rel="license" href="https://spdx.org/licenses/MPL-2.0.html"
+  >Mozilla Public License 2.0</a> &mdash; Created by <a href="https://pother.ca/" class="potherca">Potherca</a>
+  </p>
+</footer>
+
+<template id="add-row-template">
+  <p>
+    <label>Source <input name="source" placeholder="https://example.com/worker.js"></label>
+    <a href="#" class="add-row" title="Add another source">(+)</a>
+  </p>
+</template>
+
+<style type="text/css">
+    @import url(https://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono);
+    @import url(https://pother.ca/CssBase/css/created-by-potherca.css);
+
+    body {
+        font-family: Droid Sans, sans-serif;
+    }
+
+    code {
+        font-family: Droid Sans Mono, sans-serif;
+    }
+
+    footer {
+        text-align: right;
+    }
+
+    pre {
+        border: 1px solid;
+        padding: 1em;
+    }
+
+    title {
+        display: inline-block;
+    }
+
+    .errors {
+        background: white;
+        border: 1px solid;
+        color: red;
+        display: none;
+        font-weight: bold;
+        padding: 1em;
+    }
+
+    .hidden {
+        display: none
+    }
+</style>
+
+<script src="/cloudflare-workers-web/src/worker.dispatchEvent.js"></script>
+
+<script>
+  const rowContainer = document.querySelector('.row-container')
+  const rowTemplate = document.getElementById('add-row-template')
+
+  const addRow = event => {
+    if (event) {
+      event.preventDefault();
+    }
+
+    if (document.querySelector('.add-row')) {
+      document.querySelector('.add-row').remove()
+    }
+
+    const clone = rowTemplate.content.cloneNode(true)
+    const link = clone.querySelector('a')
+
+    rowContainer.appendChild(clone)
+
+    link.addEventListener('click', addRow)
+  }
+
+  addRow()
+</script>
