@@ -54,7 +54,7 @@ window.addEventListener('load', () => {
   // Page is fully loaded including all scripts, stylesheets and images
 
   if (state === 'success') {
-    const event = new Event('fetch', {})
+    const event = new Event('fetch')
 
     event.request = new Request(document.location)
 
@@ -72,20 +72,27 @@ window.addEventListener('load', () => {
     } else {
       event.response
         .then(response => {
-          response.json().then(data => {
-            const searchParams = new URL(document.location).searchParams
+          if (
+            response.status === 204
+            || ([300, 301, 302, 303, 307, 308].includes(response.status) && response.headers.has('location'))
+          ) {
+            // No body to set
+          } else {
+            return response.json().then(data => {
+              const searchParams = new URL(document.location).searchParams
 
-            let indent = 0
-            if (searchParams.has('pretty') || searchParams.has('verbose')) {
-              indent = 2
-            }
+              let indent = 0
+              if (searchParams.has('pretty') || searchParams.has('verbose')) {
+                indent = 2
+              }
 
-            document.querySelector('[data-js="response-headers"]').innerHTML +=
-              `Status: <span style="background:${response.status < 500 ? 'green' : 'red'};color:white;">${response.status}</span> (${response.statusText})\n` +
-              JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)
+              document.querySelector('[data-js="response-body"]').innerHTML += JSON.stringify(data, null, indent)
+            })
+          }
 
-            document.querySelector('[data-js="response-body"]').innerHTML += JSON.stringify(data, null, indent)
-          })
+          document.querySelector('[data-js="response-headers"]').innerHTML +=
+            `Status: <span style="background:${response.status < 500 ? 'green' : 'red'};color:white;">${response.status}</span> (${response.statusText})\n` +
+            JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)
         }).catch(handleError)
     }
   }
