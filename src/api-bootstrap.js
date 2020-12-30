@@ -89,16 +89,21 @@ async function handleRequest(request) {
     'Access-Control-Allow-Origin': '*',
   }
 
-  const buildResponse = data =>
-    new Response(JSON.stringify(data, null, config.isPretty ? 2 : 0), {
-      headers: new Headers({
-        ...corsHeaders,
-        'Content-Type': 'application/json',
-        'X-Clacks-Overhead': 'GNU Terry Pratchett',
-      }),
-      status: data.meta.status,
-      statusText: data.meta.message,
-    })
+  const buildResponse = data => {
+    if ( [300, 301, 302, 303, 307, 308].includes(data.meta.status)) {
+      return Response.redirect(data.data, data.meta.status)
+    } else {
+      return new Response(JSON.stringify(data, null, config.isPretty ? 2 : 0), {
+        headers: new Headers({
+          ...corsHeaders,
+          'Content-Type': 'application/json',
+          'X-Clacks-Overhead': 'GNU Terry Pratchett',
+        }),
+        status: data.meta.status,
+        statusText: data.meta.message,
+      })
+    }
+  }
 
   const enhanceResponse = response => {
     response = response || {}
